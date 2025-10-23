@@ -1,431 +1,1854 @@
-<!DOCTYPE html><html lang="en"><head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Neanderthal Economy</title>
-    <link rel="icon" href="images/bone.png" type="image/png">
-    <!-- Добавляем дополнительные размеры фавикона для разных устройств -->
-    <link rel="apple-touch-icon" href="images/bone.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="images/bone.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="images/bone.png">
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Silkscreen&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=8-bitify+Sans&display=swap" rel="stylesheet">
-    <link href="css/nes.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css">
-  </head>
-  <body>
-    <audio id="connect-sound" src="media/misc.wav"></audio>
-    <!-- Иконка звука в левом нижнем углу -->
-    <div id="sound-icon" style="position: fixed; bottom: 30px; left: 30px; cursor: pointer">
-      <img src="images/voice.png" alt="Sound Icon" width="64" height="64">
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tiny World Government</title>
+  <script src="/_sdk/element_sdk.js"></script>
+  <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P:wght@400&display=swap');
+        
+        body {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Press Start 2P', monospace;
+            background: url('https://i.postimg.cc/YSnZ2H12/Rrw9ew.png') center/cover no-repeat, linear-gradient(45deg, #f4e8d0, #e6d7b8);
+            color: #8b6914;
+            overflow: hidden;
+            position: relative;
+        }
+
+        html {
+            height: 100%;
+        }
+
+        .container {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background: rgba(139, 105, 20, 0.2);
+            border-bottom: 2px solid #8b6914;
+            position: relative;
+        }
+
+        .title {
+            font-size: 18px;
+            text-shadow: 0 0 10px #ff6b35;
+            animation: glow 2s ease-in-out infinite alternate;
+            color: #8b6914;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px 30px;
+            border: 2px solid #8b6914;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(255, 107, 53, 0.5);
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .nav-btn {
+            background: #a0845c;
+            color: #f4e8d0;
+            border: none;
+            padding: 8px 12px;
+            font-family: inherit;
+            font-size: 10px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            box-shadow: 0 0 15px rgba(160, 132, 92, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            background: #8b6914;
+            box-shadow: 0 0 25px rgba(139, 105, 20, 0.8);
+        }
+
+        .main-area {
+            flex: 1;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            gap: 20px;
+        }
+
+        .left-panel {
+            width: 180px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .stats-panel {
+            background: rgba(244, 232, 208, 0.8);
+            border: 2px solid #8b6914;
+            padding: 15px;
+        }
+
+        .stats-title {
+            font-size: 10px;
+            text-align: center;
+            margin-bottom: 15px;
+            color: #8b6914;
+            text-shadow: 0 0 8px #8b6914;
+        }
+
+        .stat-item {
+            margin-bottom: 12px;
+        }
+
+        .stat-label {
+            font-size: 8px;
+            margin-bottom: 4px;
+            color: #8b6914;
+        }
+
+        .stat-bar {
+            width: 100%;
+            height: 8px;
+            background: #d4c4a8;
+            border: 1px solid #a0845c;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .stat-fill {
+            height: 100%;
+            transition: width 0.5s ease;
+        }
+
+        .stat-fill.approval { background: linear-gradient(90deg, #a0845c, #c4a373, #8b6914); }
+        .stat-fill.resources { background: linear-gradient(90deg, #8b6914, #a0845c, #c4a373); }
+        .stat-fill.stability { background: linear-gradient(90deg, #a0845c, #8b6914, #c4a373); }
+        .stat-fill.happiness { background: linear-gradient(90deg, #c4a373, #a0845c, #8b6914); }
+
+        .stat-value {
+            font-size: 7px;
+            color: #8b6914;
+            margin-top: 2px;
+        }
+
+        .ministers-panel {
+            background: rgba(244, 232, 208, 0.8);
+            border: 2px solid #a0845c;
+            padding: 15px;
+        }
+
+        .ministers-title {
+            font-size: 10px;
+            text-align: center;
+            margin-bottom: 15px;
+            color: #a0845c;
+            text-shadow: 0 0 8px #a0845c;
+        }
+
+        .minister-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .minister-slot {
+            background: #d4c4a8;
+            border: 1px solid #a0845c;
+            padding: 6px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 7px;
+        }
+
+        .minister-slot:hover {
+            background: rgba(160, 132, 92, 0.3);
+            box-shadow: 0 0 10px rgba(160, 132, 92, 0.5);
+        }
+
+        .minister-icon {
+            font-size: 12px;
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        .minister-name {
+            font-size: 6px;
+            color: #8b6914;
+        }
+
+        .game-center {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            flex: 1;
+            max-width: 600px;
+        }
+
+        .world-container {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .world-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 35px);
+            grid-template-rows: repeat(8, 35px);
+            gap: 1px;
+            padding: 20px;
+            background: rgba(244, 232, 208, 0.6);
+            border: 2px solid #8b6914;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .world-grid.crisis {
+            animation: shake 0.5s infinite;
+            border-color: #a0845c;
+            box-shadow: 0 0 20px rgba(160, 132, 92, 0.8);
+        }
+
+        .country {
+            width: 35px;
+            height: 35px;
+            background: #d4c4a8;
+            border: 1px solid #a0845c;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 8px;
+        }
+
+        .country:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 15px rgba(139, 105, 20, 0.8);
+            z-index: 10;
+        }
+
+        .country.invested {
+            background: #c4a373;
+            animation: flicker-green 3s infinite;
+        }
+
+        .country.peaceful {
+            background: #a0845c;
+            animation: flicker-blue 3s infinite;
+        }
+
+        .country.conflict {
+            background: #8b6914;
+            animation: flicker-red 3s infinite;
+        }
+
+        .country.happy {
+            background: linear-gradient(45deg, #c4a373, #a0845c);
+        }
+
+        .country.stable {
+            background: linear-gradient(45deg, #a0845c, #8b6914);
+        }
+
+        .country.unstable {
+            background: linear-gradient(45deg, #8b6914, #6b4f0f);
+            animation: pulse-warning 2s infinite;
+        }
+
+        .country.crisis {
+            background: linear-gradient(45deg, #6b4f0f, #5a420c);
+            animation: crisis-flash 1s infinite;
+        }
+
+        .moving-elements {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .cloud {
+            position: absolute;
+            width: 20px;
+            height: 12px;
+            background: rgba(255, 255, 255, 0.3);
+
+            animation: float-cloud 15s linear infinite;
+        }
+
+        .plane {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: #ffff00;
+            border-radius: 2px;
+            animation: fly-plane 12s linear infinite;
+        }
+
+        .npc {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #ff00ff;
+            border-radius: 50%;
+            animation: move-npc 20s linear infinite;
+        }
+
+        .cabinet-panel {
+            width: 200px;
+            background: rgba(244, 232, 208, 0.8);
+            border: 2px solid #8b6914;
+            padding: 15px;
+            height: fit-content;
+            position: relative;
+        }
+
+        .cabinet-title {
+            font-size: 10px;
+            text-align: center;
+            margin-bottom: 15px;
+            color: #8b6914;
+            text-shadow: 0 0 8px #8b6914;
+        }
+
+        .policy-btn {
+            width: 100%;
+            background: #a0845c;
+            color: #f4e8d0;
+            border: 1px solid #8b6914;
+            padding: 8px 10px;
+            font-family: inherit;
+            font-size: 8px;
+            cursor: pointer;
+            margin-bottom: 8px;
+            transition: all 0.3s ease;
+            text-align: left;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .policy-btn:hover {
+            background: #8b6914;
+            box-shadow: 0 0 15px rgba(139, 105, 20, 0.5);
+            transform: translateX(2px);
+        }
+
+        .policy-btn:active {
+            transform: scale(0.98);
+        }
+
+        .policy-btn.cooldown {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background: #222;
+        }
+
+        .policy-btn.cooldown::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            background: rgba(255, 255, 0, 0.2);
+            animation: cooldown-fill 5s linear;
+        }
+
+        .political-actions {
+            background: rgba(244, 232, 208, 0.8);
+            border: 2px solid #8b6914;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        .political-title {
+            font-size: 10px;
+            text-align: center;
+            margin-bottom: 15px;
+            color: #8b6914;
+            text-shadow: 0 0 8px #8b6914;
+        }
+
+        .action-btn {
+            width: 100%;
+            background: #c4a373;
+            color: #5a420c;
+            border: 1px solid #8b6914;
+            padding: 8px 10px;
+            font-family: inherit;
+            font-size: 8px;
+            cursor: pointer;
+            margin-bottom: 8px;
+            transition: all 0.3s ease;
+            text-align: left;
+        }
+
+        .action-btn:hover {
+            background: #a0845c;
+            box-shadow: 0 0 15px rgba(139, 105, 20, 0.5);
+            transform: translateX(2px);
+        }
+
+        .action-btn.cooldown {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background: #222;
+        }
+
+        .music-controls {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #333;
+        }
+
+        .music-btn {
+            width: 100%;
+            background: #444;
+            color: #ffff00;
+            border: 1px solid #ffff00;
+            padding: 6px;
+            font-family: inherit;
+            font-size: 8px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .music-btn:hover {
+            background: rgba(255, 255, 0, 0.1);
+            box-shadow: 0 0 10px rgba(255, 255, 0, 0.3);
+        }
+
+        .music-btn.muted {
+            background: #222;
+            color: #666;
+            border-color: #666;
+        }
+
+        .happiness-section {
+            width: 100%;
+            max-width: 600px;
+            margin-bottom: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 15px;
+            border: 1px solid #8b6914;
+        }
+
+        .happiness-label {
+            font-size: 12px;
+            margin-bottom: 10px;
+            text-align: center;
+            color: #f4e8d0;
+        }
+
+        .happiness-bar {
+            width: 100%;
+            height: 20px;
+            background: #333;
+            border: 2px solid #8b6914;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .happiness-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #8b6914, #a0845c, #c4a373);
+            transition: width 0.5s ease;
+            width: 100%;
+        }
+
+        .events-log {
+            position: absolute;
+            bottom: 80px;
+            left: 20px;
+            right: 20px;
+            height: 60px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid #00ff41;
+            border-radius: 5px;
+            padding: 10px;
+            font-size: 10px;
+            overflow-y: auto;
+        }
+
+        .popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.95);
+            border: 3px solid #00ff41;
+
+            padding: 30px;
+            text-align: center;
+            z-index: 1000;
+            display: none;
+            box-shadow: 0 0 30px rgba(0, 255, 65, 0.5);
+        }
+
+        .popup h3 {
+            margin-top: 0;
+            font-size: 14px;
+            color: #00ff41;
+        }
+
+        .popup-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            justify-content: center;
+        }
+
+        .popup-btn {
+            background: #333;
+            color: white;
+            border: 2px solid #00ff41;
+            padding: 10px 15px;
+            font-family: inherit;
+            font-size: 10px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .popup-btn:hover {
+            background: #00ff41;
+            color: #000;
+        }
+
+        .popup-btn.invest { border-color: #00ff00; }
+        .popup-btn.peace { border-color: #0080ff; }
+        .popup-btn.conflict { border-color: #ff0000; }
+
+        .country-info-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.95);
+            border: 3px solid #00ff41;
+
+            padding: 20px;
+            text-align: center;
+            z-index: 1000;
+            display: none;
+            box-shadow: 0 0 30px rgba(0, 255, 65, 0.5);
+            min-width: 300px;
+        }
+
+        .country-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 15px 0;
+            font-size: 10px;
+        }
+
+        .country-stat {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #333;
+        }
+
+        .event-popup {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 0, 0, 0.9);
+            border: 2px solid #ffff00;
+            border-radius: 8px;
+            padding: 15px;
+            max-width: 250px;
+            z-index: 1500;
+            font-size: 10px;
+            animation: slideIn 0.5s ease;
+        }
+
+        .achievement-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(45deg, #ffaa00, #ff6600);
+            border: 3px solid #ffff00;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            z-index: 2000;
+            display: none;
+            box-shadow: 0 0 50px rgba(255, 170, 0, 0.8);
+            animation: achievement-popup 0.8s ease;
+        }
+
+        .achievement-popup h2 {
+            color: #000;
+            font-size: 14px;
+            margin: 0 0 10px 0;
+        }
+
+        .achievement-popup p {
+            color: #333;
+            font-size: 10px;
+            margin: 0;
+        }
+
+        .crisis-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 0, 0, 0.1);
+            pointer-events: none;
+            z-index: 500;
+            display: none;
+            animation: pulse 1s infinite;
+        }
+
+        .collapse-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 0, 0, 0.9);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            text-align: center;
+        }
+
+        .collapse-screen h1 {
+            font-size: 24px;
+            color: white;
+            margin-bottom: 30px;
+            animation: pulse 1s infinite;
+        }
+
+        .restart-btn {
+            background: #00ff41;
+            color: #000;
+            border: none;
+            padding: 15px 30px;
+            font-family: inherit;
+            font-size: 12px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+
+        .wallet-tooltip {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.95);
+            border: 2px solid #9945ff;
+            border-radius: 8px;
+            padding: 10px;
+            font-size: 8px;
+            color: #9945ff;
+            pointer-events: none;
+            z-index: 1000;
+            white-space: nowrap;
+            box-shadow: 0 0 15px rgba(153, 69, 255, 0.5);
+            transform: translate(-50%, -100%);
+            margin-top: -10px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .wallet-tooltip.show {
+            opacity: 1;
+        }
+
+        .wallet-tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 5px solid transparent;
+            border-top-color: #9945ff;
+        }
+
+        .wallet-label {
+            color: #ccc;
+            font-size: 7px;
+            margin-bottom: 3px;
+        }
+
+        .wallet-address {
+            color: #9945ff;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 10px #ff6b35; }
+            to { text-shadow: 0 0 20px #ff6b35, 0 0 30px #ff6b35; }
+        }
+
+        @keyframes flicker-green {
+            0%, 100% { background: #00ff00; }
+            50% { background: #00cc00; }
+        }
+
+        @keyframes flicker-blue {
+            0%, 100% { background: #0080ff; }
+            50% { background: #0066cc; }
+        }
+
+        @keyframes flicker-red {
+            0%, 100% { background: #ff0000; }
+            50% { background: #cc0000; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        @keyframes cooldown-fill {
+            0% { width: 100%; }
+            100% { width: 0%; }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-2px); }
+            75% { transform: translateX(2px); }
+        }
+
+        @keyframes pulse-warning {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        @keyframes crisis-flash {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        @keyframes float-cloud {
+            0% { transform: translateX(-30px); }
+            100% { transform: translateX(450px); }
+        }
+
+        @keyframes fly-plane {
+            0% { transform: translate(-20px, 50px); }
+            50% { transform: translate(200px, 100px); }
+            100% { transform: translate(450px, 30px); }
+        }
+
+        @keyframes move-npc {
+            0% { transform: translate(0px, 0px); }
+            25% { transform: translate(100px, 50px); }
+            50% { transform: translate(200px, 20px); }
+            75% { transform: translate(300px, 80px); }
+            100% { transform: translate(400px, 40px); }
+        }
+
+        @keyframes achievement-popup {
+            0% { transform: scale(0) rotate(180deg); opacity: 0; }
+            50% { transform: scale(1.2) rotate(0deg); opacity: 1; }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(300px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+    </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+  <script src="https://cdn.tailwindcss.com" type="text/javascript"></script>
+ </head>
+ <body>
+  <div class="container">
+   <header class="header">
+    <h1 class="title">TINY WORLD GOVERNMENT</h1>
+    <div class="nav-buttons"><a href="https://pump.fun" target="_blank" rel="noopener noreferrer" class="nav-btn">X</a> <a href="https://pump.fun" target="_blank" rel="noopener noreferrer" class="nav-btn">pump.fun</a>
     </div>
-    <!-- Элемент аудио, который будет воспроизводить звук -->
-    <audio id="audio" src="media/audio.mp3" preload="auto"></audio>
-
-    <div class="bg">
-      <!-- Иконка кости по центру вверху -->
-      <div class="bone-icon">
-        <img src="images/bone.png" alt="Bone Icon">
+   </header>
+   <main class="main-area">
+    <div class="left-panel">
+     <div class="stats-panel">
+      <div class="stats-title">
+       GLOBAL METRICS
       </div>
-      
-      <!-- Иконка Twitter в правом верхнем углу -->
-      <div class="twitter-icon">
-        <a href="https://x.com/HomoBazaar" target="_blank">
-          <img src="images/Twitter_icon_in.png" alt="Twitter Icon">
-        </a>
+      <div class="stat-item">
+       <div class="stat-label">
+        Global Approval
+       </div>
+       <div class="stat-bar">
+        <div class="stat-fill approval" id="approvalFill"></div>
+       </div>
+       <div class="stat-value" id="approvalValue">
+        75%
+       </div>
       </div>
-      
-      <!-- Горизонтальное меню навигации вверху -->
-      <div class="top-nav">
-        <div class="balance-display">
-          <p class="po">Balance: <span id="balance">0</span> $NE</p>
+      <div class="stat-item">
+       <div class="stat-label">
+        Resources
+       </div>
+       <div class="stat-bar">
+        <div class="stat-fill resources" id="resourcesFill"></div>
+       </div>
+       <div class="stat-value" id="resourcesValue">
+        $5,000
+       </div>
+      </div>
+      <div class="stat-item">
+       <div class="stat-label">
+        Stability
+       </div>
+       <div class="stat-bar">
+        <div class="stat-fill stability" id="stabilityFill"></div>
+       </div>
+       <div class="stat-value" id="stabilityValue">
+        80%
+       </div>
+      </div>
+      <div class="stat-item">
+       <div class="stat-label">
+        Population Happiness
+       </div>
+       <div class="stat-bar">
+        <div class="stat-fill happiness" id="popHappinessFill"></div>
+       </div>
+       <div class="stat-value" id="popHappinessValue">
+        85%
+       </div>
+      </div>
+     </div>
+     <div class="ministers-panel">
+      <div class="ministers-title">
+       COUNCIL OF MINISTERS
+      </div>
+      <div class="minister-grid">
+       <div class="minister-slot" onclick="manageMinister('defense')"><span class="minister-icon">🛡️</span>
+        <div class="minister-name" id="defenseMinister">
+         Gen. Smith
         </div>
-        <nav class="nav-menu">
-          <button class="menu-item" data-tab="home"><img src="images/menu/home.png" alt="Cave" width="32" height="32"> Cave</button>
-          <button class="menu-item" data-tab="economy"><img src="images/menu/docs.png" alt="Fair" width="24" height="24"> Fair</button>
-          <button class="menu-item" data-tab="citizens"><img src="images/menu/citizens.png" alt="Homo" width="24" height="24"> Homo</button>
-          <button class="menu-item" data-tab="marketplace"><img src="images/menu/marketplace.png" alt="Bazaar" width="24" height="24"> Bazaar</button>
-          <button class="menu-item" data-tab="create"><img src="images/menu/create.png" alt="Create a homo and goods" width="24" height="24"> Create a homo<br>and goods</button>
-          <button class="menu-item" data-tab="soc"><img src="images/menu/socials.png" alt="Communication" width="24" height="24"> Communication</button>
-        </nav>
-      </div>
-      
-      <div class="container">
-
-        </aside>
-
-        <!-- Content Section -->
-        <main class="content">
-          <!-- Cave Tab -->
-          <div class="tab" id="home">
-
-            <h1>WELCOME TO THE Neanderthal Economy</h1>
-            <p>
-              SYSTEM STATUS:
-              <span class="blinking-text" style="color: #1e7e34">ONLINE</span>
-            </p>
-            <p>
-              Trade like a caveman is an autonomous digital ecosystem powered by $NE.
-              This 8-bit simulation operates with precision and efficiency,
-              where citizens are created, interact, and contribute to the
-              virtual economy.
-            </p>
-            <ul>
-              <ol>
-                <strong class="strong">CREATE HOMO:</strong>
-                Initiate a new 8-bit avatar.
-              </ol>
-              <ol>
-                <strong class="strong">TRADE GOODS:</strong>
-                Exchange digital assets within the bazaar using $NE.
-              </ol>
-              <ol>
-                <strong class="strong">DESIGN ASSETS:</strong>
-                Contribute by creating unique digital utilities and items.
-              </ol>
-            </ul>
-            <p>
-              Every action you take in this environment affects the system’s
-              dynamics. Build, trade, and innovate to enhance the collective.
-            </p>
-          </div>
-
-          <div class="tab" id="doc" style="display: none">
-            <div class="docs"></div>
-          </div>
-
-          <div class="tab" id="soc" style="display: none">
-            <h1>COMMUNICATION</h1>
-            <div class="button-row">
-              <a href="https://x.com/HomoBazaar" target="_blank"><button id="tg" class="menu-item">X</button></a>
-              <a href="https://x.com/HomoBazaar" target="_blank"><button id="capital-btn" class="menu-item">$NE</button></a>
-              <a href="https://x.com/HomoBazaar"_blank"><button id="dex-btn" class="menu-item">Dex</button></a>
-            </div>
-          </div>
-
-          <div class="tab" id="create" style="display: none">
-            <div class="form-container">
-              <div class="form-group">
-                <label for="name">Name</label>
-                <input type="text" id="name" class="form-input" placeholder="Enter your name">
-              </div>
-              <div class="form-group">
-                <label for="desc">Description</label>
-                <input type="text" id="desc" class="form-input" placeholder="Enter description">
-              </div>
-              <div class="form-group">
-                <label for="additional">Additional Info</label>
-                <input type="text" id="additional" class="form-input" placeholder="Enter additional info">
-              </div>
-              <div class="form-group">
-                <label for="additional">Price</label>
-                <input type="text" id="asdadsdas" class="form-input" placeholder="Enter price">
-              </div>
-              <button id="create-btn" class="create-btn">Create</button>
-              <p id="soon-msg" class="soon-msg">Soon</p>
-            </div>
-          </div>
-
-          <div class="tab" id="economy" style="display: none">
-            <div class="eco">
-              <h3 class="section-title">Abstract</h3>
-              <p>
-                The Trade like a caveman represents a speculative exploration into a
-                virtual, autonomous 8-bit world where creativity, trade, and
-                community coexist. Homo engage through customizable avatars,
-                participate in a vibrant bazaar powered by $NER, and
-                contribute to a dynamic economic and social simulation. The
-                project envisions an evolving ecosystem driven by participant
-                innovation, offering the potential to redefine interaction and
-                value creation in a nostalgic, 8-bitated environment.
-              </p>
-
-              <h3 class="section-title">1. Introduction</h3>
-              <h4>1.1 Vision</h4>
-              <p>
-                The Trade like a caveman is an experimental concept blending the charm
-                of retro 8-bit aesthetics with innovative digital economies. The
-                goal is to create a thriving virtual world that evolves with its
-                homo, encouraging creativity, community, and interaction.
-              </p>
-
-              <h4>1.2 Objectives</h4>
-              <div class="list-container">
-                <ul>
-                  <li>
-                    An immersive and accessible environment for participants to
-                    interact with 8-bit avatars and explore a virtual economy.
-                  </li>
-                  <li>
-                    Opportunities for users to design unique digital assets,
-                    potentially contributing to a growing ecosystem.
-                  </li>
-                  <li>
-                    A simulation where trade, innovation, and creativity align
-                    with an interactive and decentralized ethos.
-                  </li>
-                </ul>
-              </div>
-
-              <h4>1.3 Conceptual Inspiration</h4>
-              <p>
-                This initiative draws from the timeless appeal of 8-bit visuals
-                and incorporates ideas from modern economic and community-driven
-                systems. By empowering users to create and trade, the Trade like a caveman proposes a model for fostering an engaging,
-                community-centric digital society.
-              </p>
-
-              <h3 class="section-title">2. Core Concepts</h3>
-              <h4>2.1 The Trade like a caveman Simulation</h4>
-              <div class="highlight">
-                <p>
-                  <strong>A Living Ecosystem:</strong> The VILLAGE serves as a
-                  simulated, self-sustaining virtual environment where citizens
-                  participate in everyday activities, trade, and creative
-                  expression.
-                </p>
-                <p>
-                  <strong>Customizable Avatars:</strong> Participants craft
-                  unique 8-bitated characters that inhaVILLAGE the virtual world,
-                  shaping their presence within the community.
-                </p>
-              </div>
-
-              <h4>2.2 The $NE Economy</h4>
-              <p>
-                <strong>Currency Overview:</strong> $NE serves as the core unit
-                of exchange in the Trade like a caveman, enabling citizens to trade,
-                purchase, and innovate within the simulation.
-              </p>
-              <p>
-                <strong>Goods and Resources:</strong> Citizens can access
-                virtual items, ranging from Gold $NE (representing significant
-                value, such as 1,000 $NE per plate) to everyday utilities and
-                custom user-generated assets.
-              </p>
-
-              <h4>2.3 User-Generated Assets</h4>
-              <div class="highlight">
-                <p>
-                  <strong>Design Your Creations:</strong> Participants have the
-                  opportunity to conceptualize and introduce new digital goods,
-                  utilities, or services that enhance the simulation experience.
-                </p>
-                <p>
-                  <strong>A Homo for Trade:</strong> An open trading
-                  system allows homo to exchange goods, fostering a dynamic
-                  and interactive economy.
-                </p>
-              </div>
-
-              <h4>2.4 Governance</h4>
-              <p>
-                The project encourages collaborative decision-making, where
-                participants can propose and vote on potential changes or
-                additions to the virtual world. Governance models could explore
-                proportional influence based on $NE holdings or active
-                participation metrics.
-              </p>
-
-              <h3 class="section-title">3. Key Features</h3>
-              <h4>3.1 Homo Creation</h4>
-              <p>
-                <strong>Custom Avatars:</strong> Homo personalize their
-                8-bitated characters, showcasing creativity and individual
-                identity.
-              </p>
-              <p>
-                <strong>A Social Identity:</strong> Avatars interact in a shared
-                environment, enabling friendships, collaborations, and cultural
-                exchanges.
-              </p>
-
-              <h4>3.2 Economic Framework</h4>
-              <div class="highlight">
-                <p>
-                  <strong>The Role of $NE:</strong> $NE facilitates trade and
-                  commerce, encouraging participants to engage in meaningful
-                  economic interactions.
-                </p>
-                <p>
-                  <strong>Earning $NE:</strong> Through crafting, trading, or
-                  participating in VILLAGE activities.
-                </p>
-                <p>
-                  <strong>Spending $SURVIVR:</strong> On virtual goods, real estate,
-                  or user-created utilities.
-                </p>
-                <p>
-                  <strong>Gold $NE and Silver $NE:</strong> These higher-value
-                  denominations allow for savings-like functionality or the
-                  accumulation of wealth.
-                </p>
-              </div>
-
-              <h4>3.3 Asset Creation and Trade</h4>
-              <p>
-                <strong>Creative Freedom:</strong> Homo are invited to
-                imagine and implement virtual goods or tools, ranging from
-                decorative items to functional utilities like farming tools or
-                virtual entertainment.
-              </p>
-              <p>
-                <strong>A Thriving Bazaar:</strong> Participants can trade
-                their creations, fostering a diverse and evolving economic
-                landscape.
-              </p>
-
-              <h4>3.4 Community and Culture</h4>
-              <p>
-                The simulation could host collaborative events, cultural
-                exchanges, and communal projects, building a sense of belonging
-                and shared purpose.
-              </p>
-
-              <h3 class="section-title">4. Technical Architecture</h3>
-              <h4>4.1 Platform Foundations</h4>
-              <p>
-                Designed as an accessible simulation compatible across devices,
-                with potential scalability to accommodate more participants and
-                features over time.
-              </p>
-
-              <h4>4.2 Security Measures</h4>
-              <p>
-                Data integrity and asset ownership are protected through
-                encryption and token-like verification mechanisms.
-              </p>
-
-              <h4>4.3 Flexible Scalability</h4>
-              <p>
-                The platform may adapt to growing user bases, evolving demands,
-                or new technologies as the community and simulation expand
-                organically.
-              </p>
-
-              <h3 class="section-title">5. Economic Model</h3>
-              <h4>5.1 Earning $NE</h4>
-              <p>
-                Various activities within the VILLAGE, including crafting,
-                trading, or participating in VILLAGE-wide initiatives, offer
-                opportunities to earn $NE Creative and innovative
-                contributions, such as in-demand digital goods, may yield higher
-                economic rewards.
-              </p>
-
-              <h4>5.2 Spending $NE</h4>
-              <p>
-                Homo can allocate their $NE toward acquiring goods,
-                services, or virtual real estate. High-value items, like Gold
-                $NE plates, could function as stores of value within the
-                economic system.
-              </p>
-
-              <h4>5.3 Dynamic Bazaar</h4>
-              <p>
-                Supply and demand dynamics govern pricing, promoting a
-                self-regulating market system.
-              </p>
-
-              <h3 class="section-title">6. Governance Framework</h3>
-              <h4>6.1 Homo Participation</h4>
-              <p>
-                Decisions regarding potential features or economic adjustments
-                could be influenced by community discussions or voting
-                mechanisms.
-              </p>
-
-              <h4>6.2 Encouraging Innovation</h4>
-              <p>
-                Governance may prioritize proposals that enhance creativity,
-                sustainability, or inclusivity within the simulation.
-              </p>
-
-              <h3 class="section-title">7. Conceptual Growth</h3>
-              <h4>Exploration of Features</h4>
-              <p>
-                The Trade like a caveman continues to evolve, encouraging innovation,
-                interaction, and creativity among its growing population. Future
-                enhancements could include new gameplay mechanics, social
-                interactions, and advanced digital economies.
-              </p>
-            </div>
-          </div>
-
-          <!-- Bazaar Tab -->
-          <div class="tab" id="marketplace" style="display: none">
-            <h1>Bazaar</h1>
-            <div id="marketplace-container" class="cards-container"></div>
-            <div class="cards" id="marketplace-cards"></div>
-          </div>
-
-          <!-- Homo Tab -->
-          <div class="tab" id="citizens" style="display: none">
-            <h1>Homo</h1>
-            <div id="citizens-list" class="cards-container scrollable-container"></div>
-          </div>
-          
-          <!-- Modal for homo/item details -->
-          <!-- Модальное окно перемещено ниже для избежания дублирования -->
-          
-          <div class="generate">
-            <div id="profile-status">
-              you homo: <span style="color: red">not revived</span>
-            </div>
-            <button id="connect-button">Revive</button>
-            <div class="avatar"></div>
-            <div class="buttons1">
-              <button id="generate-button">Generate Homo</button>
-              <input type="file" id="avatar-upload" accept="image/*" style="display: none;">
-              <button id="add-button">Add</button>
-            </div>
-          </div>
-        </main>
-      </div>
-
-      <!-- Success Modal -->
-      <div id="success-modal" style="display: none">
-        <div class="modal-content">
-          <span id="close-success-modal" class="close">&times;</span>
-          <h2 style="margin: 10px 0;">Success!</h2>
-          <p id="success-message">Operation completed successfully!</p>
-          <button id="close-success-btn" class="modal-btn">Close</button>
+       </div>
+       <div class="minister-slot" onclick="manageMinister('finance')"><span class="minister-icon">💰</span>
+        <div class="minister-name" id="financeMinister">
+         Dr. Gold
         </div>
-      </div>
-
-      <div id="modal" style="display: none">
-        <div class="modal-content">
-          <span class="close" id="modal-close">&times;</span>
-          <div class="modal-header">
-            <h2 id="modal-text">Modal Title</h2>
-          </div>
-          <div class="modal-body">
-            <div class="modal-image-container">
-              <img id="modal-image" src="images/BIT.png" alt="Item" width="100" height="100">
-            </div>
-            <div class="modal-info">
-              <p id="modal-description" style="color: #000000; text-shadow: none; font-weight: bold;">Description of the item.</p>
-              <p id="modal-price" class="price-tag" style="color: #000000; text-shadow: none;">Price: $NE 0</p>
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button id="buy-btn" class="modal-btn">Buy</button>
-            <button id="sell-btn" class="modal-btn" style="display: none">Sell</button>
-            <button id="close-modal" class="modal-btn">Close</button>
-          </div>
+       </div>
+       <div class="minister-slot" onclick="manageMinister('education')"><span class="minister-icon">📚</span>
+        <div class="minister-name" id="educationMinister">
+         Prof. Wise
         </div>
+       </div>
+       <div class="minister-slot" onclick="manageMinister('health')"><span class="minister-icon">🏥</span>
+        <div class="minister-name" id="healthMinister">
+         Dr. Care
+        </div>
+       </div>
       </div>
-
-      <script src="js/index.js"></script>
+     </div>
     </div>
-    
-    <!-- Контейнер для мини-мобов -->
-    <div id="mobs-container"></div>
+    <div class="game-center">
+     <div class="world-container">
+      <div class="world-grid" id="worldGrid">
+       <div class="moving-elements" id="movingElements"></div>
+      </div>
+     </div>
+     <div class="happiness-section">
+      <div class="happiness-label">
+       Global Happiness Index: <span id="happinessValue">100</span>%
+      </div>
+      <div class="happiness-bar">
+       <div class="happiness-fill" id="happinessFill"></div>
+      </div>
+     </div>
+    </div>
+    <div class="cabinet-panel">
+     <div class="cabinet-title">
+      CABINET DECISIONS
+     </div><button class="policy-btn" id="printMoneyBtn" onclick="executePolicy('printMoney')"> 💰 Print More Money </button> <button class="policy-btn" id="spaceBtn" onclick="executePolicy('space')"> 🚀 Launch Space Program </button> <button class="policy-btn" id="banMemesBtn" onclick="executePolicy('banMemes')"> 🚫 Ban Memes </button>
+     <div class="political-actions">
+      <div class="political-title">
+       POLITICAL ACTIONS
+      </div><button class="action-btn" onclick="executePoliticalAction('taxes')"> 📊 Raise Taxes </button> <button class="action-btn" onclick="executePoliticalAction('campaign')"> 🗳️ Start Campaign </button> <button class="action-btn" onclick="executePoliticalAction('law')"> ⚖️ Implement Law </button> <button class="action-btn" onclick="executePoliticalAction('spy')"> 🕵️ Spy on Neighbor </button> <button class="action-btn" onclick="executePoliticalAction('monday')"> 🚫 Ban all Mondays </button> <button class="action-btn" onclick="executePoliticalAction('dance')"> 💃 Mandate Dance Breaks </button>
+     </div>
+     <div class="music-controls"><button class="music-btn" id="musicBtn" onclick="toggleMusic()"> 🎵 Music: ON </button>
+     </div>
+    </div>
+   </main>
+   <div class="events-log" id="eventsLog">
+    <div>
+     Welcome to Tiny World Government! Click countries to manage global affairs...
+    </div>
+   </div>
+  </div>
+  <div class="popup" id="countryPopup">
+   <h3>Country Management</h3>
+   <p>Choose your action for this nation:</p>
+   <div class="popup-buttons"><button class="popup-btn invest" onclick="takeAction('invest')">💰 Invest</button> <button class="popup-btn peace" onclick="takeAction('peace')">🕊️ Declare Peace</button> <button class="popup-btn conflict" onclick="takeAction('conflict')">⚔️ Start Conflict</button>
+   </div><button class="popup-btn" onclick="closePopup()" style="margin-top: 15px;">Cancel</button>
+  </div>
+  <div class="country-info-popup" id="countryInfoPopup">
+   <h3 id="countryInfoTitle">Country Details</h3>
+   <div class="country-stats" id="countryStats">
+    <div class="country-stat"><strong>Population:</strong><br><span id="countryPopulation">2.5M</span>
+    </div>
+    <div class="country-stat"><strong>Resources:</strong><br><span id="countryResources">$1,200</span>
+    </div>
+    <div class="country-stat"><strong>Happiness:</strong><br><span id="countryHappiness">75%</span>
+    </div>
+    <div class="country-stat"><strong>Stability:</strong><br><span id="countryStability">80%</span>
+    </div>
+   </div>
+   <div class="popup-buttons"><button class="popup-btn" onclick="countryAction('policy')">📋 Decide Policy</button> <button class="popup-btn" onclick="countryAction('aid')">🤝 Send Aid</button> <button class="popup-btn" onclick="countryAction('propaganda')">📢 Start Propaganda</button>
+   </div><button class="popup-btn" onclick="closeCountryInfo()" style="margin-top: 15px;">Close</button>
+  </div>
+  <div class="achievement-popup" id="achievementPopup">
+   <h2 id="achievementTitle">🏆 Achievement Unlocked!</h2>
+   <p id="achievementText">You've accomplished something great!</p><button class="popup-btn" onclick="closeAchievement()" style="margin-top: 15px; background: #000; color: #ffff00;">Continue</button>
+  </div>
+  <div class="crisis-overlay" id="crisisOverlay"></div>
+  <div class="collapse-screen" id="collapseScreen">
+   <h1>GLOBAL COLLAPSE</h1>
+   <p style="font-size: 14px; color: white; max-width: 400px;">The world has descended into chaos! Your policies have led to complete societal breakdown.</p>
+   <p style="font-size: 12px; color: #ffff00; margin-top: 20px;">Try a new policy next time.</p><button class="restart-btn" onclick="restartGame()">🔄 Restart Simulation</button>
+  </div>
+  <script>
+        let happiness = 100;
+        let selectedCountry = null;
+        let gameRunning = true;
+        let eventInterval;
+        let musicPlaying = true;
+        let audioContext;
+        let musicGain;
+        let oscillators = [];
 
-    <!-- JavaScript для анимации мини-мобов -->
-    <script src="js/mobs.js"></script>
-  
+        // Global metrics
+        let globalMetrics = {
+            approval: 75,
+            resources: 5000,
+            stability: 80,
+            popHappiness: 85
+        };
 
-</body></html>
-</body></html>
+        // Country data with Solana wallets
+        let countries = [];
+        
+        // Solana wallet addresses for countries
+        const solanaWallets = [
+            "7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU",
+            "9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM",
+            "4vJ9JU1bJJE96FWSJKvHsmmFADCg4gpZQff4P3bkLKi",
+            "8sAZiBoRqMn2gEMWEQbNdHSW4pkF7Lx9C3dRvKQTzJpM",
+            "6yT8CQjjPQRl4uHvFADCg4gpZQff4P3bkLKiWEQbNdHS",
+            "3nR5KjHgFqPl2tYvFADCg4gpZQff4P3bkLKiWEQbNdHS",
+            "5mP7LkJgFqPl2tYvFADCg4gpZQff4P3bkLKiWEQbNdHS",
+            "2hQ6MkJgFqPl2tYvFADCg4gpZQff4P3bkLKiWEQbNdHS",
+            "8tR9NkJgFqPl2tYvFADCg4gpZQff4P3bkLKiWEQbNdHS",
+            "4wS2OkJgFqPl2tYvFADCg4gpZQff4P3bkLKiWEQbNdHS",
+            "7xL5PkJgFqPl2tYvFADCg4gpZQff4P3bkLKiWEQbNdHS",
+            "9yM8QkJgFqPl2tYvFADCg4gpZQff4P3bkLKiWEQbNdHS",
+            "3nT6RkJgFqPl2tYvFADCg4gpZQff4P3bkLKiWEQbNdHS",
+            "6uV9SkJgFqPl2tYvFADCg4gpZQff4P3bkLKiWEQbNdHS",
+            "2hW7TkJgFqPl2tYvFADCg4gpZQff4P3bkLKiWEQbNdHS",
+            "8tX4UkJgFqPl2tYvFADCg4gpZQff4P3bkLKiWEQbNdHS",
+            "5mY1VkJgFqPl2tYvFADCg4gpZQff4P3bkLKiWEQbNdHS",
+            "9yZ8WkJgFqPl2tYvFADCg4gpZQff4P3bkLKiWEQbNdHS",
+            "BpF3QkRtVwXmN8sL2hY6vC9dE1fG7jK4mP5qR8tU3wX",
+            "CqG4RlStWxYnO9tM3iZ7wD0eF2gH8kL5nQ6rS9uV4xY",
+            "DrH5SmTuXyZoP0uN4jA8xE1fG3hI9lM6oR7sT0vW5yZ",
+            "EsI6TnUvYzApQ1vO5kB9yF2gH4iJ0mN7pS8tU1wX6zA",
+            "FtJ7UoVwZaBqR2wP6lC0zG3hI5jK1nO8qT9uV2xY7aB",
+            "GuK8VpWxAbCsS3xQ7mD1aH4iJ6kL2oP9rU0vW3yZ8bC",
+            "HvL9WqXyBcDtT4yR8nE2bI5jK7lM3pQ0sV1wX4zA9cD",
+            "IwM0XrYzCdEuU5zS9oF3cJ6kL8mN4qR1tW2xY5aB0dE",
+            "JxN1YsZaDeF vV6aT0pG4dK7lM9nO5rS2uX3yZ6bC1eF",
+            "KyO2ZtAbEfGwW7bU1qH5eL8mN0oP6sT3vY4zA7cD2fG",
+            "LzP3AuBcFgHxX8cV2rI6fM9nO1pQ7tU4wZ5aB8dE3gH",
+            "MaQ4BvCdGhIyY9dW3sJ7gN0oP2qR8uV5xA6bC9eF4hI",
+            "NbR5CwDeHiJzZ0eX4tK8hO1pQ3rS9vW6yB7cD0fG5iJ",
+            "OcS6DxEfIjKaA1fY5uL9iP2qR4sT0wX7zC8dE1gH6jK",
+            "PdT7EyFgJkLbB2gZ6vM0jQ3rS5tU1xY8aD9eF2hI7kL",
+            "QeU8FzGhKlMcC3hA7wN1kR4sT6uV2yZ9bE0fG3iJ8lM",
+            "RfV9GaHiLmNdD4iB8xO2lS5tU7vW3zA0cF1gH4jK9mN",
+            "SgW0HbIjMnOeE5jC9yP3mT6uV8wX4aB1dG2hI5kL0nO",
+            "ThX1IcJkNoP fF6kD0zQ4nU7vW9xY5bC2eH3iJ6lM1oP",
+            "UiY2JdKlOpQgG7lE1aR5oV8wX0yZ6cD3fI4jK7mN2pQ",
+            "VjZ3KeMmPqRhH8mF2bS6pW9xY1zA7dE4gJ5kL8nO3qR",
+            "WkA4LfNnQrSiI9nG3cT7qX0yZ2aB8eF5hK6lM9oP4rS",
+            "XlB5MgOoRsTjJ0oH4dU8rY1zA3bC9fG6iL7mN0pQ5sT",
+            "YmC6NhPpStUkK1pH5eV9sZ2aB4cD0gH7jM8nO1qR6tU",
+            "ZnD7OiQqTuVlL2qI6fW0tA3bC5dE1hI8kN9oP2rS7uV",
+            "AoE8PjRrUvWmM3rJ7gX1uB4cD6eF2iJ9lO0pQ3sT8vW",
+            "BpF9QkSsVwXnN4sK8hY2vC5dE7fG3jK0mP1qR4tU9wX",
+            "CqG0RlTtWxYoO5tL9iZ3wD6eF8gH4kL1nQ2rS5uV0xY",
+            "DrH1SmUuXyZpP6uM0jA4xE7fG9hI5lM2oR3sT6vW1yZ",
+            "EsI2TnVvYzAqQ7vN1kB5yF8gH0iJ6mN3pS4tU7wX2zA"
+        ];
+        
+        // Ministers
+        let ministers = {
+            defense: { name: "Gen. Smith", efficiency: 75 },
+            finance: { name: "Dr. Gold", efficiency: 80 },
+            education: { name: "Prof. Wise", efficiency: 70 },
+            health: { name: "Dr. Care", efficiency: 85 }
+        };
+
+        // Achievements
+        let achievements = {
+            highApproval: false,
+            richNation: false,
+            alienContact: false,
+            danceRevolution: false,
+            mondayBan: false
+        };
+
+        // Policy cooldowns
+        let policyCooldowns = {
+            printMoney: false,
+            space: false,
+            banMemes: false
+        };
+
+        // Political action cooldowns
+        let actionCooldowns = {
+            taxes: false,
+            campaign: false,
+            law: false,
+            spy: false,
+            monday: false,
+            dance: false
+        };
+
+        let selectedCountryData = null;
+        let crisisMode = false;
+
+        const events = [
+            { text: "🌍 Global warming increases! Coastal nations suffer.", happiness: -5, approval: -3 },
+            { text: "🤖 AI takes control of major infrastructure systems!", happiness: -8, stability: -10 },
+            { text: "📉 Trade crisis hits global markets!", happiness: -6, resources: -500 },
+            { text: "🦠 New pandemic strain detected in multiple countries!", happiness: -10, stability: -8 },
+            { text: "🌪️ Climate disasters increase worldwide!", happiness: -7, resources: -300 },
+            { text: "💡 Breakthrough in renewable energy discovered!", happiness: 8, approval: 5 },
+            { text: "🤝 International peace treaty signed!", happiness: 12, stability: 8 },
+            { text: "🚀 Space exploration mission succeeds!", happiness: 6, approval: 10 },
+            { text: "🏥 Global healthcare initiative launched!", happiness: 10, approval: 7 },
+            { text: "📚 Education reform improves literacy rates!", happiness: 5, approval: 6 },
+            { text: "👽 Alien signals detected from outer space!", happiness: -15, stability: -20, special: 'alien' },
+            { text: "🎭 Global cultural festival brings nations together!", happiness: 15, approval: 12 },
+            { text: "⚡ Power grid failures across multiple regions!", happiness: -12, stability: -15 },
+            { text: "🌾 Record harvest season boosts food security!", happiness: 8, resources: 800 }
+        ];
+
+        const countryNames = [
+            "Northland", "Eastport", "Westville", "Southbay", "Midtown", "Highlands",
+            "Lowlands", "Riverside", "Mountainview", "Oceanside", "Forestland", "Desert Springs",
+            "Ice Valley", "Sunny Shores", "Storm Coast", "Peaceful Plains", "Busy Harbor", "Quiet Hills"
+        ];
+
+        function initializeGrid() {
+            const grid = document.getElementById('worldGrid');
+            grid.innerHTML = '<div class="moving-elements" id="movingElements"></div>';
+            countries = [];
+            
+            for (let i = 0; i < 96; i++) {
+                const country = document.createElement('div');
+                country.className = 'country';
+                country.dataset.index = i;
+                
+                // Generate country data with Solana wallet
+                const countryData = {
+                    index: i,
+                    name: countryNames[i % countryNames.length] + (Math.floor(i / countryNames.length) > 0 ? ` ${Math.floor(i / countryNames.length) + 1}` : ''),
+                    population: (Math.random() * 5 + 0.5).toFixed(1) + 'M',
+                    resources: Math.floor(Math.random() * 2000 + 500),
+                    happiness: Math.floor(Math.random() * 40 + 60),
+                    stability: Math.floor(Math.random() * 40 + 60),
+                    wallet: solanaWallets[i % solanaWallets.length] + (i >= solanaWallets.length ? Math.random().toString(36).substr(2, 4) : '')
+                };
+                
+                countries[i] = countryData;
+                
+                // Set initial country appearance based on stats
+                updateCountryAppearance(country, countryData);
+                
+                country.addEventListener('click', (e) => {
+                    if (e.shiftKey) {
+                        openCountryInfo(i);
+                    } else {
+                        openCountryPopup(i);
+                    }
+                });
+
+                // Add hover tooltip for Solana wallet
+                country.addEventListener('mouseenter', (e) => {
+                    showWalletTooltip(e, countryData.wallet, countryData.name);
+                });
+
+                country.addEventListener('mouseleave', () => {
+                    hideWalletTooltip();
+                });
+                
+                grid.appendChild(country);
+            }
+            
+            // Add moving elements
+            createMovingElements();
+        }
+
+        function updateCountryAppearance(element, data) {
+            element.className = 'country';
+            
+            if (data.happiness >= 80 && data.stability >= 80) {
+                element.classList.add('happy');
+            } else if (data.stability >= 70) {
+                element.classList.add('stable');
+            } else if (data.stability < 40) {
+                element.classList.add('crisis');
+            } else if (data.stability < 60) {
+                element.classList.add('unstable');
+            }
+        }
+
+        let walletTooltip = null;
+
+        function showWalletTooltip(event, walletAddress, countryName) {
+            hideWalletTooltip(); // Remove any existing tooltip
+            
+            walletTooltip = document.createElement('div');
+            walletTooltip.className = 'wallet-tooltip';
+            walletTooltip.innerHTML = `
+                <div class="wallet-label">🏛️ ${countryName}</div>
+                <div class="wallet-label">Owned by Solana Holder:</div>
+                <div class="wallet-address">${walletAddress}</div>
+            `;
+            
+            document.body.appendChild(walletTooltip);
+            
+            const rect = event.target.getBoundingClientRect();
+            walletTooltip.style.left = (rect.left + rect.width / 2) + 'px';
+            walletTooltip.style.top = rect.top + 'px';
+            
+            // Show tooltip with animation
+            setTimeout(() => {
+                if (walletTooltip) {
+                    walletTooltip.classList.add('show');
+                }
+            }, 50);
+        }
+
+        function hideWalletTooltip() {
+            if (walletTooltip) {
+                walletTooltip.remove();
+                walletTooltip = null;
+            }
+        }
+
+        function createMovingElements() {
+            const container = document.getElementById('movingElements');
+            
+            // Create clouds
+            for (let i = 0; i < 3; i++) {
+                const cloud = document.createElement('div');
+                cloud.className = 'cloud';
+                cloud.style.top = Math.random() * 200 + 'px';
+                cloud.style.animationDelay = Math.random() * 15 + 's';
+                container.appendChild(cloud);
+            }
+            
+            // Create planes
+            for (let i = 0; i < 2; i++) {
+                const plane = document.createElement('div');
+                plane.className = 'plane';
+                plane.style.animationDelay = Math.random() * 12 + 's';
+                container.appendChild(plane);
+            }
+            
+            // Create NPCs
+            for (let i = 0; i < 4; i++) {
+                const npc = document.createElement('div');
+                npc.className = 'npc';
+                npc.style.animationDelay = Math.random() * 20 + 's';
+                container.appendChild(npc);
+            }
+        }
+
+        function openCountryPopup(countryIndex) {
+            if (!gameRunning) return;
+            
+            selectedCountry = countryIndex;
+            document.getElementById('countryPopup').style.display = 'block';
+        }
+
+        function openCountryInfo(countryIndex) {
+            if (!gameRunning) return;
+            
+            const country = countries[countryIndex];
+            selectedCountryData = country;
+            
+            document.getElementById('countryInfoTitle').textContent = country.name;
+            document.getElementById('countryPopulation').textContent = country.population;
+            document.getElementById('countryResources').textContent = '$' + country.resources;
+            document.getElementById('countryHappiness').textContent = country.happiness + '%';
+            document.getElementById('countryStability').textContent = country.stability + '%';
+            
+            document.getElementById('countryInfoPopup').style.display = 'block';
+        }
+
+        function closePopup() {
+            document.getElementById('countryPopup').style.display = 'none';
+            selectedCountry = null;
+        }
+
+        function closeCountryInfo() {
+            document.getElementById('countryInfoPopup').style.display = 'none';
+            selectedCountryData = null;
+        }
+
+        function countryAction(action) {
+            if (!selectedCountryData) return;
+            
+            let effect = '';
+            let happinessChange = 0;
+            let approvalChange = 0;
+            
+            switch (action) {
+                case 'policy':
+                    effect = `📋 New policy implemented in ${selectedCountryData.name}!`;
+                    happinessChange = Math.random() > 0.6 ? 5 : -3;
+                    approvalChange = Math.random() > 0.5 ? 3 : -2;
+                    break;
+                case 'aid':
+                    effect = `🤝 Aid package sent to ${selectedCountryData.name}!`;
+                    happinessChange = 8;
+                    approvalChange = 5;
+                    globalMetrics.resources -= 200;
+                    break;
+                case 'propaganda':
+                    effect = `📢 Propaganda campaign launched in ${selectedCountryData.name}!`;
+                    happinessChange = Math.random() > 0.4 ? -5 : 10;
+                    approvalChange = Math.random() > 0.4 ? -8 : 15;
+                    break;
+            }
+            
+            updateGlobalMetrics({ happiness: happinessChange, approval: approvalChange });
+            addEvent(effect);
+            closeCountryInfo();
+        }
+
+        function takeAction(action) {
+            if (selectedCountry === null || !gameRunning) return;
+
+            const country = document.querySelector(`[data-index="${selectedCountry}"]`);
+            const oldClass = country.className.split(' ').find(c => ['invested', 'peaceful', 'conflict'].includes(c));
+            
+            if (oldClass) {
+                country.classList.remove(oldClass);
+            }
+
+            let happinessChange = 0;
+            let actionText = '';
+
+            switch (action) {
+                case 'invest':
+                    country.classList.add('invested');
+                    happinessChange = Math.random() > 0.3 ? 8 : -3;
+                    actionText = happinessChange > 0 ? 
+                        '💰 Investment succeeds! Economic growth boosts morale.' :
+                        '💸 Investment fails! Corruption scandal emerges.';
+                    break;
+                case 'peace':
+                    country.classList.add('peaceful');
+                    happinessChange = Math.random() > 0.2 ? 12 : -2;
+                    actionText = happinessChange > 0 ? 
+                        '🕊️ Peace treaty successful! Regional stability improves.' :
+                        '😔 Peace talks fail. Tensions remain high.';
+                    break;
+                case 'conflict':
+                    country.classList.add('conflict');
+                    happinessChange = Math.random() > 0.8 ? 5 : -15;
+                    actionText = happinessChange > 0 ? 
+                        '⚔️ Swift military victory! Opposition eliminated.' :
+                        '💀 Conflict escalates! Civilian casualties mount.';
+                    break;
+            }
+
+            updateHappiness(happinessChange);
+            addEvent(actionText);
+            closePopup();
+        }
+
+        function updateHappiness(change) {
+            happiness = Math.max(0, Math.min(100, happiness + change));
+            document.getElementById('happinessValue').textContent = happiness;
+            document.getElementById('happinessFill').style.width = happiness + '%';
+
+            if (happiness <= 0) {
+                endGame();
+            }
+        }
+
+        function updateGlobalMetrics(changes) {
+            Object.keys(changes).forEach(key => {
+                if (globalMetrics.hasOwnProperty(key)) {
+                    globalMetrics[key] = Math.max(0, Math.min(100, globalMetrics[key] + changes[key]));
+                } else if (key === 'happiness') {
+                    updateHappiness(changes[key]);
+                }
+            });
+            
+            // Update UI
+            document.getElementById('approvalValue').textContent = globalMetrics.approval + '%';
+            document.getElementById('approvalFill').style.width = globalMetrics.approval + '%';
+            
+            document.getElementById('resourcesValue').textContent = '$' + globalMetrics.resources.toLocaleString();
+            document.getElementById('resourcesFill').style.width = Math.min(100, globalMetrics.resources / 100) + '%';
+            
+            document.getElementById('stabilityValue').textContent = globalMetrics.stability + '%';
+            document.getElementById('stabilityFill').style.width = globalMetrics.stability + '%';
+            
+            document.getElementById('popHappinessValue').textContent = globalMetrics.popHappiness + '%';
+            document.getElementById('popHappinessFill').style.width = globalMetrics.popHappiness + '%';
+            
+            // Check for crisis mode
+            checkCrisisMode();
+            checkAchievements();
+        }
+
+        function checkCrisisMode() {
+            const inCrisis = globalMetrics.stability < 30 || globalMetrics.approval < 25;
+            
+            if (inCrisis && !crisisMode) {
+                crisisMode = true;
+                document.getElementById('worldGrid').classList.add('crisis');
+                document.getElementById('crisisOverlay').style.display = 'block';
+                showEventPopup('⚠️ CRISIS ALERT: Global instability detected!', 'crisis');
+            } else if (!inCrisis && crisisMode) {
+                crisisMode = false;
+                document.getElementById('worldGrid').classList.remove('crisis');
+                document.getElementById('crisisOverlay').style.display = 'none';
+            }
+        }
+
+        function checkAchievements() {
+            // High Approval Achievement
+            if (globalMetrics.approval >= 90 && !achievements.highApproval) {
+                achievements.highApproval = true;
+                showAchievement('Popular Leader', 'Maintained 90%+ global approval!');
+            }
+            
+            // Rich Nation Achievement
+            if (globalMetrics.resources >= 10000 && !achievements.richNation) {
+                achievements.richNation = true;
+                showAchievement('Economic Powerhouse', 'Accumulated $10,000+ in resources!');
+            }
+        }
+
+        function showAchievement(title, text) {
+            document.getElementById('achievementTitle').textContent = '🏆 ' + title;
+            document.getElementById('achievementText').textContent = text;
+            document.getElementById('achievementPopup').style.display = 'block';
+        }
+
+        function closeAchievement() {
+            document.getElementById('achievementPopup').style.display = 'none';
+        }
+
+        function addEvent(text) {
+            const log = document.getElementById('eventsLog');
+            const eventDiv = document.createElement('div');
+            eventDiv.textContent = text;
+            eventDiv.style.marginBottom = '5px';
+            eventDiv.style.borderLeft = '3px solid #00ff41';
+            eventDiv.style.paddingLeft = '8px';
+            log.appendChild(eventDiv);
+            log.scrollTop = log.scrollHeight;
+        }
+
+        function showEventPopup(text, type = 'normal') {
+            const popup = document.createElement('div');
+            popup.className = 'event-popup';
+            popup.textContent = text;
+            
+            if (type === 'crisis') {
+                popup.style.background = 'rgba(255, 0, 0, 0.95)';
+                popup.style.borderColor = '#ff0000';
+            }
+            
+            document.body.appendChild(popup);
+            
+            setTimeout(() => {
+                popup.remove();
+            }, 4000);
+        }
+
+        function triggerRandomEvent() {
+            if (!gameRunning) return;
+
+            const event = events[Math.floor(Math.random() * events.length)];
+            
+            const changes = {};
+            if (event.happiness) changes.happiness = event.happiness;
+            if (event.approval) changes.approval = event.approval;
+            if (event.stability) changes.stability = event.stability;
+            if (event.resources) changes.resources = event.resources;
+            
+            updateGlobalMetrics(changes);
+            addEvent(event.text);
+            showEventPopup(event.text);
+            
+            // Special events
+            if (event.special === 'alien' && !achievements.alienContact) {
+                achievements.alienContact = true;
+                setTimeout(() => {
+                    showAchievement('First Contact', 'Survived alien signal detection!');
+                }, 2000);
+            }
+        }
+
+        function executePolicy(policyType) {
+            if (!gameRunning || policyCooldowns[policyType]) return;
+
+            policyCooldowns[policyType] = true;
+            const btnId = policyType === 'printMoney' ? 'printMoneyBtn' : 
+                         policyType === 'space' ? 'spaceBtn' : 'banMemesBtn';
+            const btn = document.getElementById(btnId);
+            btn.classList.add('cooldown');
+
+            let changes = {};
+            let eventText = '';
+            let affectedCountries = [];
+
+            switch (policyType) {
+                case 'printMoney':
+                    if (Math.random() > 0.4) {
+                        changes = { happiness: 15, resources: 1000, stability: -5 };
+                        eventText = '💰 Economic stimulus successful! Markets rally worldwide.';
+                    } else {
+                        changes = { happiness: -20, approval: -15, stability: -10 };
+                        eventText = '📉 Hyperinflation crisis! Currency becomes worthless.';
+                    }
+                    affectedCountries = getRandomCountries(3);
+                    break;
+                case 'space':
+                    if (Math.random() > 0.3) {
+                        changes = { happiness: 25, approval: 20, resources: -500 };
+                        eventText = '🚀 Space program inspires humanity! Scientific breakthrough achieved.';
+                    } else {
+                        changes = { happiness: -10, approval: -8, resources: -800 };
+                        eventText = '💥 Rocket explodes on launch! Massive budget waste exposed.';
+                    }
+                    affectedCountries = getRandomCountries(2);
+                    break;
+                case 'banMemes':
+                    if (Math.random() > 0.6) {
+                        changes = { happiness: 5, approval: 8, stability: 10 };
+                        eventText = '🚫 Meme ban reduces misinformation! Public discourse improves.';
+                    } else {
+                        changes = { happiness: -25, approval: -20, stability: -15 };
+                        eventText = '😡 Meme ban sparks global protests! Freedom of expression under attack.';
+                    }
+                    affectedCountries = getRandomCountries(5);
+                    break;
+            }
+
+            affectedCountries.forEach(countryIndex => {
+                const country = document.querySelector(`[data-index="${countryIndex}"]`);
+                if (country) {
+                    country.style.boxShadow = '0 0 15px rgba(255, 255, 0, 0.8)';
+                    setTimeout(() => {
+                        country.style.boxShadow = '';
+                    }, 2000);
+                }
+            });
+
+            updateGlobalMetrics(changes);
+            addEvent(eventText);
+
+            setTimeout(() => {
+                policyCooldowns[policyType] = false;
+                btn.classList.remove('cooldown');
+            }, 5000);
+        }
+
+        function executePoliticalAction(actionType) {
+            if (!gameRunning || actionCooldowns[actionType]) return;
+
+            actionCooldowns[actionType] = true;
+            
+            let changes = {};
+            let eventText = '';
+
+            switch (actionType) {
+                case 'taxes':
+                    changes = { resources: 800, approval: -10, happiness: -5 };
+                    eventText = '📊 Tax increase implemented! Revenue up, citizens grumpy.';
+                    break;
+                case 'campaign':
+                    changes = { approval: 15, resources: -300, stability: 5 };
+                    eventText = '🗳️ Campaign launched! Public relations improved.';
+                    break;
+                case 'law':
+                    if (Math.random() > 0.5) {
+                        changes = { stability: 12, approval: 8 };
+                        eventText = '⚖️ New law passed! Order and justice prevail.';
+                    } else {
+                        changes = { stability: -8, approval: -12 };
+                        eventText = '⚖️ Controversial law backfires! Public outrage grows.';
+                    }
+                    break;
+                case 'spy':
+                    if (Math.random() > 0.3) {
+                        changes = { stability: 8, resources: -200 };
+                        eventText = '🕵️ Intelligence operation successful! Threats neutralized.';
+                    } else {
+                        changes = { approval: -15, stability: -10 };
+                        eventText = '🕵️ Spy scandal exposed! International incident created.';
+                    }
+                    break;
+                case 'monday':
+                    changes = { happiness: 30, approval: -20, stability: -25 };
+                    eventText = '🚫 Mondays officially banned! Workers celebrate, economy confused.';
+                    if (!achievements.mondayBan) {
+                        achievements.mondayBan = true;
+                        setTimeout(() => {
+                            showAchievement('Monday Abolisher', 'Successfully banned the worst day of the week!');
+                        }, 1500);
+                    }
+                    break;
+                case 'dance':
+                    changes = { happiness: 25, approval: 10, stability: -5 };
+                    eventText = '💃 Mandatory dance breaks instituted! Productivity drops, morale soars!';
+                    if (!achievements.danceRevolution) {
+                        achievements.danceRevolution = true;
+                        setTimeout(() => {
+                            showAchievement('Dance Revolution', 'Brought rhythm to the world!');
+                        }, 1500);
+                    }
+                    break;
+            }
+
+            updateGlobalMetrics(changes);
+            addEvent(eventText);
+
+            setTimeout(() => {
+                actionCooldowns[actionType] = false;
+            }, 7000);
+        }
+
+        function manageMinister(ministry) {
+            const minister = ministers[ministry];
+            const actions = ['Promote', 'Assign Budget', 'Fire'];
+            const action = actions[Math.floor(Math.random() * actions.length)];
+            
+            let changes = {};
+            let eventText = '';
+            
+            switch (action) {
+                case 'Promote':
+                    minister.efficiency = Math.min(100, minister.efficiency + 10);
+                    changes = { approval: 5, resources: -100 };
+                    eventText = `📈 ${minister.name} promoted! Ministry efficiency improved.`;
+                    break;
+                case 'Assign Budget':
+                    changes = { resources: -300, stability: 8 };
+                    eventText = `💰 Budget allocated to ${ministry} ministry.`;
+                    break;
+                case 'Fire':
+                    const newNames = {
+                        defense: ['Gen. Steel', 'Col. Iron', 'Adm. Storm'],
+                        finance: ['Dr. Silver', 'Prof. Cash', 'Ms. Coin'],
+                        education: ['Dr. Smart', 'Prof. Learn', 'Ms. Teach'],
+                        health: ['Dr. Heal', 'Nurse Joy', 'Dr. Life']
+                    };
+                    minister.name = newNames[ministry][Math.floor(Math.random() * 3)];
+                    minister.efficiency = Math.floor(Math.random() * 30 + 60);
+                    document.getElementById(ministry + 'Minister').textContent = minister.name;
+                    changes = { approval: -8, stability: -5 };
+                    eventText = `🔥 ${ministry} minister fired! ${minister.name} appointed.`;
+                    break;
+            }
+            
+            updateGlobalMetrics(changes);
+            addEvent(eventText);
+        }
+
+        function getRandomCountries(count) {
+            const countries = [];
+            for (let i = 0; i < count; i++) {
+                countries.push(Math.floor(Math.random() * 96));
+            }
+            return countries;
+        }
+
+        function initializeMusic() {
+            try {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                musicGain = audioContext.createGain();
+                musicGain.connect(audioContext.destination);
+                musicGain.gain.value = 0.1;
+                
+                if (musicPlaying) {
+                    startMusic();
+                }
+            } catch (e) {
+                console.log('Audio not supported');
+            }
+        }
+
+        function startMusic() {
+            if (!audioContext) return;
+            
+            const frequencies = [220, 277, 330, 370, 440, 554, 659];
+            
+            function playNote(freq, startTime, duration) {
+                const osc = audioContext.createOscillator();
+                const gain = audioContext.createGain();
+                
+                osc.connect(gain);
+                gain.connect(musicGain);
+                
+                osc.frequency.value = freq;
+                osc.type = 'square';
+                
+                gain.gain.setValueAtTime(0, startTime);
+                gain.gain.linearRampToValueAtTime(0.05, startTime + 0.1);
+                gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
+                
+                osc.start(startTime);
+                osc.stop(startTime + duration);
+                
+                return osc;
+            }
+
+            function createMusicLoop() {
+                if (!musicPlaying || !audioContext) return;
+                
+                const now = audioContext.currentTime;
+                const pattern = [0, 2, 4, 2, 1, 3, 0, 4];
+                
+                pattern.forEach((noteIndex, i) => {
+                    const freq = frequencies[noteIndex];
+                    const startTime = now + (i * 0.5);
+                    playNote(freq, startTime, 0.4);
+                });
+                
+                setTimeout(createMusicLoop, 4000);
+            }
+            
+            createMusicLoop();
+        }
+
+        function toggleMusic() {
+            musicPlaying = !musicPlaying;
+            const btn = document.getElementById('musicBtn');
+            
+            if (musicPlaying) {
+                btn.textContent = '🎵 Music: ON';
+                btn.classList.remove('muted');
+                if (audioContext) {
+                    musicGain.gain.value = 0.1;
+                    startMusic();
+                }
+            } else {
+                btn.textContent = '🔇 Music: OFF';
+                btn.classList.add('muted');
+                if (audioContext) {
+                    musicGain.gain.value = 0;
+                }
+            }
+        }
+
+        function endGame() {
+            gameRunning = false;
+            clearInterval(eventInterval);
+            document.getElementById('collapseScreen').style.display = 'flex';
+        }
+
+        function restartGame() {
+            happiness = 100;
+            gameRunning = true;
+            selectedCountry = null;
+            selectedCountryData = null;
+            crisisMode = false;
+            
+            // Reset global metrics
+            globalMetrics = {
+                approval: 75,
+                resources: 5000,
+                stability: 80,
+                popHappiness: 85
+            };
+            
+            // Reset achievements
+            Object.keys(achievements).forEach(key => {
+                achievements[key] = false;
+            });
+            
+            // Reset cooldowns
+            Object.keys(policyCooldowns).forEach(key => {
+                policyCooldowns[key] = false;
+                const btnId = key === 'printMoney' ? 'printMoneyBtn' : 
+                             key === 'space' ? 'spaceBtn' : 'banMemesBtn';
+                document.getElementById(btnId).classList.remove('cooldown');
+            });
+            
+            Object.keys(actionCooldowns).forEach(key => {
+                actionCooldowns[key] = false;
+            });
+            
+            // Reset ministers
+            ministers = {
+                defense: { name: "Gen. Smith", efficiency: 75 },
+                finance: { name: "Dr. Gold", efficiency: 80 },
+                education: { name: "Prof. Wise", efficiency: 70 },
+                health: { name: "Dr. Care", efficiency: 85 }
+            };
+            
+            document.getElementById('defenseMinister').textContent = ministers.defense.name;
+            document.getElementById('financeMinister').textContent = ministers.finance.name;
+            document.getElementById('educationMinister').textContent = ministers.education.name;
+            document.getElementById('healthMinister').textContent = ministers.health.name;
+            
+            document.getElementById('collapseScreen').style.display = 'none';
+            document.getElementById('countryPopup').style.display = 'none';
+            document.getElementById('countryInfoPopup').style.display = 'none';
+            document.getElementById('achievementPopup').style.display = 'none';
+            document.getElementById('crisisOverlay').style.display = 'none';
+            document.getElementById('worldGrid').classList.remove('crisis');
+            
+            document.getElementById('eventsLog').innerHTML = '<div>Game restarted! Click countries to manage global affairs...</div>';
+            
+            updateHappiness(0);
+            updateGlobalMetrics({});
+            initializeGrid();
+            startEventTimer();
+        }
+
+        function startEventTimer() {
+            clearInterval(eventInterval);
+            eventInterval = setInterval(triggerRandomEvent, 8000);
+        }
+
+        // Initialize game
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeGrid();
+            updateGlobalMetrics({});
+            startEventTimer();
+            
+            document.addEventListener('click', function initMusic() {
+                initializeMusic();
+                document.removeEventListener('click', initMusic);
+            }, { once: true });
+            
+            setTimeout(() => {
+                addEvent('🌟 Simulation initialized. Global monitoring systems online.');
+                showEventPopup('🎮 Shift+Click countries for detailed info!');
+            }, 3000);
+        });
+
+        // Element SDK Configuration
+        const defaultConfig = {
+            title_text: "TINY WORLD GOVERNMENT",
+            background_color: "#1a1a2e",
+            accent_color: "#00ff41",
+            button_color: "#ff0040",
+            text_color: "#00ff41"
+        };
+
+        async function render(config) {
+            document.querySelector('.title').textContent = config.title_text || defaultConfig.title_text;
+            document.body.style.background = `linear-gradient(45deg, ${config.background_color || defaultConfig.background_color}, #16213e)`;
+            
+            const accentColor = config.accent_color || defaultConfig.accent_color;
+            document.documentElement.style.setProperty('--accent-color', accentColor);
+            
+            const accentElements = document.querySelectorAll('.title, .header, .happiness-bar, .popup, .events-log');
+            accentElements.forEach(el => {
+                if (el.classList.contains('title')) {
+                    el.style.color = accentColor;
+                    el.style.textShadow = `0 0 10px ${accentColor}`;
+                } else {
+                    el.style.borderColor = accentColor;
+                }
+            });
+
+            const buttonColor = config.button_color || defaultConfig.button_color;
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.style.background = buttonColor;
+            });
+
+            const textColor = config.text_color || defaultConfig.text_color;
+            document.body.style.color = textColor;
+        }
+
+        function mapToCapabilities(config) {
+            return {
+                recolorables: [
+                    {
+                        get: () => config.background_color || defaultConfig.background_color,
+                        set: (value) => {
+                            config.background_color = value;
+                            window.elementSdk.setConfig({ background_color: value });
+                        }
+                    },
+                    {
+                        get: () => config.accent_color || defaultConfig.accent_color,
+                        set: (value) => {
+                            config.accent_color = value;
+                            window.elementSdk.setConfig({ accent_color: value });
+                        }
+                    },
+                    {
+                        get: () => config.button_color || defaultConfig.button_color,
+                        set: (value) => {
+                            config.button_color = value;
+                            window.elementSdk.setConfig({ button_color: value });
+                        }
+                    }
+                ],
+                borderables: [],
+                fontEditable: undefined,
+                fontSizeable: undefined
+            };
+        }
+
+        function mapToEditPanelValues(config) {
+            return new Map([
+                ["title_text", config.title_text || defaultConfig.title_text]
+            ]);
+        }
+
+        if (window.elementSdk) {
+            window.elementSdk.init({
+                defaultConfig,
+                render,
+                mapToCapabilities,
+                mapToEditPanelValues
+            });
+        }
+    </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9933484810d7db9f',t:'MTc2MTI0Mzk4Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
